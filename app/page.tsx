@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { useState } from "react";
 import ActivityMap from "./components/ActivityMap";
 
@@ -56,7 +55,14 @@ function Survey() {
     }, 500);
   };
 
-  const [activities, setActivities] = useState<any[]>([]);
+  const [activities, setActivities] = useState<Array<{
+    name: string;
+    description: string;
+    whyItMatches: string;
+    costRange: string;
+    link: string;
+    coordinates: { lat: number; lng: number };
+  }>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

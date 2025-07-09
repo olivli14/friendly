@@ -65,7 +65,7 @@ Format the response as a JSON array with objects containing: name, description, 
     let activities;
     try {
       activities = JSON.parse(activitiesText);
-    } catch (parseError) {
+    } catch {
       // If JSON parsing fails, try to extract JSON from the response
       const jsonMatch = activitiesText.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
@@ -76,11 +76,12 @@ Format the response as a JSON array with objects containing: name, description, 
     }
 
     // Ensure all activities have valid coordinates
-    const activitiesWithCoordinates = activities.map((activity: any, index: number) => {
+    const activitiesWithCoordinates = activities.map((activity: Record<string, unknown>, index: number) => {
       // If coordinates are missing or invalid, generate fallback coordinates
-      if (!activity.coordinates || 
-          typeof activity.coordinates.lat !== 'number' || 
-          typeof activity.coordinates.lng !== 'number') {
+      const coords = activity.coordinates as { lat?: number; lng?: number } | undefined;
+      if (!coords || 
+          typeof coords.lat !== 'number' || 
+          typeof coords.lng !== 'number') {
         
         // Generate coordinates within a reasonable radius of the user's location
         // This is a simple fallback - in a real app, you'd want to geocode the location

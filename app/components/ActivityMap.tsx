@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import ReactDOM from 'react-dom/client';
+import { useEffect, useRef } from 'react';
 
 interface Activity {
   name: string;
@@ -21,52 +20,34 @@ interface ActivityMapProps {
 
 declare global {
   interface Window {
-    mapboxgl: any;
+    mapboxgl: {
+      Map: new (options: Record<string, unknown>) => {
+        on: (event: string, callback: () => void) => void;
+        addControl: (control: unknown, position?: string) => void;
+        remove: () => void;
+      };
+      Marker: new (options?: { color?: string }) => {
+        setLngLat: (coords: [number, number]) => {
+          setPopup: (popup: unknown) => {
+            addTo: (map: unknown) => void;
+          };
+        };
+      };
+      Popup: new (options?: { offset?: number }) => {
+        setHTML: (html: string) => unknown;
+      };
+      NavigationControl: new () => unknown;
+      accessToken: string | undefined;
+    };
   }
 }
 
-// Define the PopupContent component
-const PopupContent = ({ activity }: { activity: Activity }) => {
-  return (
-    <div className="p-3">
-      <h3 className="text-lg font-semibold text-blue-600">
-        {activity.link ? (
-          <a href={activity.link} target="_blank" rel="noopener noreferrer">
-            {activity.name}
-          </a>
-        ) : (
-          activity.name
-        )}
-      </h3>
-      <p className="text-sm text-gray-600 mt-2 mb-3">{activity.description}</p>
-      <div className="flex items-center justify-between">
-        <span className={`px-2 py-1 rounded text-xs font-medium ${
-          activity.costRange === 'Free' ? 'bg-green-100 text-green-800' :
-          activity.costRange === '$' ? 'bg-blue-100 text-blue-800' :
-          activity.costRange === '$$' ? 'bg-yellow-100 text-yellow-800' :
-          'bg-red-100 text-red-800'
-        }`}>
-          {activity.costRange}
-        </span>
-        {activity.link && (
-          <a 
-            href={activity.link} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-blue-500 text-sm hover:underline"
-          >
-            Learn More →
-          </a>
-        )}
-      </div>
-    </div>
-  );
-};
+
 
 export default function ActivityMap({ activities }: ActivityMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const map = useRef<any>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
     if (!mapContainer.current || map.current || activities.length === 0) return;
@@ -111,12 +92,8 @@ export default function ActivityMap({ activities }: ActivityMapProps) {
       map.current.addControl(new window.mapboxgl.NavigationControl(), 'top-right');
 
       map.current.on('load', () => {
-        setMapLoaded(true);
-        
-        const ORANGE_COLOR = '#ff6700';
-
         // Add markers for each activity with valid coordinates
-        validActivities.forEach((activity, index) => {
+        validActivities.forEach((activity) => {
           // Create popup with HTML content
           const popup = new window.mapboxgl.Popup({ offset: 25 })
             .setHTML(`
