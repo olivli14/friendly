@@ -29,6 +29,41 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Environment Setup
+
+To use the ChatGPT API for generating local activities and Mapbox for displaying activity locations, you need to set up your API keys:
+
+1. Create a `.env.local` file in the root directory
+2. Add your API keys:
+   ```
+   OPENAI_API_KEY=your_actual_openai_api_key_here
+   NEXT_PUBLIC_MAPBOX_API_KEY=your_actual_mapbox_token_here
+   ```
+3. Get your API keys from:
+   - OpenAI: [OpenAI's platform](https://platform.openai.com/api-keys)
+   - Mapbox: [Mapbox's platform](https://account.mapbox.com/access-tokens/)
+
+## Features
+
+- **Survey System**: Collects user preferences and location information
+- **AI-Powered Recommendations**: Uses ChatGPT to generate personalized local activities
+- **Interactive Map**: Displays activity locations with numbered pins using Mapbox
+- **Activity Links**: Direct links to learn more or book activities
+- **Responsive Design**: Works on desktop and mobile devices
+- **Dark Mode Support**: Automatically adapts to user's system preferences
+
+## How It Works
+
+1. Users complete a 5-question survey about their preferences
+2. The app sends survey responses to the ChatGPT API
+3. AI generates 5 personalized local activities based on:
+   - Indoor/outdoor preferences
+   - Arts/crafts vs sports preferences
+   - Exploration vs familiarity preferences
+   - Current hobbies
+   - Location (zip code & state)
+4. Activities are displayed with descriptions, cost ranges, and explanations of why they match the user's preferences
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
