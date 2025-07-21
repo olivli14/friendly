@@ -18,9 +18,14 @@ export default function Results() {
   }>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [submittedSurveys, setSubmittedSurveys] = useState<Array<{ hobbies: string[]; zip_code: number }>>([]);
 
   useEffect(() => {
     if (!hobbies.length || !zip) return;
+    // Only call OpenAI API if this is a fresh submission (not just a reload)
+    const submissionKey = `survey_submitted_${hobbies.join('_')}_${zip}`;
+    const hasSubmitted = sessionStorage.getItem(submissionKey);
+    if (hasSubmitted) return;
     const fetchActivities = async () => {
       setLoading(true);
       setError(null);
@@ -37,6 +42,8 @@ export default function Results() {
         }
         const data = await response.json();
         setActivities(data.activities);
+        // Mark as submitted so we don't call again on reload
+        sessionStorage.setItem(submissionKey, "true");
       } catch (err) {
         setError("Failed to generate activities. Please try again.");
         console.error("Error:", err);
@@ -46,6 +53,22 @@ export default function Results() {
     };
     fetchActivities();
   }, [hobbies, zip]);
+
+  useEffect(() => {
+    // Fetch submitted surveys
+    const fetchSurveys = async () => {
+      try {
+        const response = await fetch('/api/supabase', { method: 'GET' });
+        const result = await response.json();
+        if (result.success) {
+          setSubmittedSurveys(result.data || []);
+        }
+      } catch (err) {
+        // Optionally handle error
+      }
+    };
+    fetchSurveys();
+  }, []);
 
   return (
     <div className="transition-all duration-500 opacity-100 scale-100 text-center max-w-2xl mx-auto">
@@ -120,6 +143,20 @@ export default function Results() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+      {/* Submitted Surveys Section */}
+      {submittedSurveys.length > 0 && (
+        <div className="mt-10">
+          <h3 className="text-lg font-semibold mb-2">Submitted Surveys</h3>
+          <ul className="space-y-2">
+            {submittedSurveys.map((survey, idx) => (
+              <li key={idx} className="bg-gray-100 dark:bg-gray-800 p-3 rounded">
+                <b>Hobbies:</b> {survey.hobbies.join(', ')} <br />
+                <b>Zip Code:</b> {survey.zip_code}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

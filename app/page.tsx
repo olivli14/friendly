@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import ActivityMap from "@/app/components/ActivityMap";
+import { saveSurvey } from "@/app/lib/actions";
 
 function Survey() {
   const hobbyOptions = [
@@ -48,23 +49,39 @@ function Survey() {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setZipError(null);
+  
     if (selectedHobbies.length === 0 || !zipCode.trim()) return;
+  
     const result = zipCodeSchema.safeParse(zipCode.trim());
     if (!result.success) {
       setZipError(result.error.errors[0].message);
       return;
     }
-    // Pass data to results page via query params
-    const params = new URLSearchParams({
-      hobbies: selectedHobbies.join(","),
-      zip: zipCode.trim(),
-    });
-    router.push(`/results?${params.toString()}`);
+  
+    try {
+      const res = await saveSurvey(selectedHobbies, Number(zipCode.trim()));
+  
+      if (!res.success) {
+        setZipError("Failed to save survey: " + res.error);
+        return;
+      }
+  
+      const params = new URLSearchParams({
+        hobbies: selectedHobbies.join(","),
+        zip: zipCode.trim(),
+      });
+  
+    
+      // Also navigate to /dashboard/results
+      router.push(`/dashboard/results?${params.toString()}`);
+    } catch (err: any) {
+      setZipError("Unexpected error: " + (err.message || err.toString()));
+    }
   };
-
+  
   return (
     <form
       onSubmit={handleSubmit}
