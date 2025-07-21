@@ -63,8 +63,8 @@ export default function Results() {
         if (result.success) {
           setSubmittedSurveys(result.data || []);
         }
-      } catch (err) {
-        // Optionally handle error
+      } catch {
+        console.log('could not get');
       }
     };
     fetchSurveys();

@@ -1,11 +1,11 @@
 'use server';
 
-import postgres from 'postgres';
-import { z } from 'zod';
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
+//import postgres from 'postgres';
+//import { z } from 'zod';
+//import { revalidatePath } from 'next/cache';
+//import { redirect } from 'next/navigation';
 //import { signIn } from '@/auth';
-import AuthError from 'next-auth';
+//import AuthError from 'next-auth';
 import { createClient } from '@/app/api/supabase/server';
 
 export async function saveSurvey(hobbies: string[], zipCode: number) {

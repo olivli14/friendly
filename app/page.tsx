@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import ActivityMap from "@/app/components/ActivityMap";
 import { saveSurvey } from "@/app/lib/actions";
 
 function Survey() {
@@ -77,8 +76,16 @@ function Survey() {
     
       // Also navigate to /dashboard/results
       router.push(`/dashboard/results?${params.toString()}`);
-    } catch (err: any) {
-      setZipError("Unexpected error: " + (err.message || err.toString()));
+    } catch (err: unknown) {
+      let message = "Unexpected error";
+      if (err instanceof Error) {
+        message = err.message;
+      } else if (typeof err === "string") {
+        message = err;
+      } else if (err && typeof err === "object" && "message" in err) {
+        message = String((err as { message: unknown }).message);
+      }
+      setZipError("Unexpected error: " + message);
     }
   };
   
