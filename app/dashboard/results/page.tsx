@@ -2,8 +2,9 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ActivityMap from "@/app/components/ActivityMap";
+import { Suspense } from "react";
 
-export default function Results() {
+function ResultsInner() {
   const searchParams = useSearchParams();
   const hobbies = searchParams.get("hobbies")?.split(",") || [];
   const zip = searchParams.get("zip") || "";
@@ -160,5 +161,13 @@ export default function Results() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function Results() {
+  return (
+    <Suspense fallback={<div className="text-center mt-10">Loading results...</div>}>
+      <ResultsInner />
+    </Suspense>
   );
 } 
