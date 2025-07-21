@@ -9,16 +9,13 @@ export async function POST(request: NextRequest) {
   try {
     const { answers } = await request.json();
     
-    const [indoorsOutdoors, artsSports, exploringFamiliar, hobbies, location] = answers;
+    const [selectedHobbies, zipCode] = answers;
     
     const prompt = `Based on the following survey responses, suggest 5 fun activities the user can do in their local area:
 
 Survey Responses:
-- Indoors/Outdoors preference: ${indoorsOutdoors}
-- Arts/Crafts or Sports preference: ${artsSports}
-- Exploring new places or familiar things: ${exploringFamiliar}
-- Hobbies: ${hobbies}
-- Location (zip code & state): ${location}
+- Hobbies: ${selectedHobbies}
+- Location (zip code & state): ${zipCode}
 
 Please provide 5 specific, actionable activities that match their preferences and are available in their local area. For each activity, include:
 1. Activity name
