@@ -19,7 +19,6 @@ function ResultsInner() {
   }>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [submittedSurveys, setSubmittedSurveys] = useState<Array<{ hobbies: string[]; zip_code: number }>>([]);
 
   useEffect(() => {
     if (!hobbies.length || !zip) return;
@@ -55,21 +54,6 @@ function ResultsInner() {
     fetchActivities();
   }, [hobbies, zip]);
 
-  useEffect(() => {
-    // Fetch submitted surveys
-    const fetchSurveys = async () => {
-      try {
-        const response = await fetch('/api/supabase', { method: 'GET' });
-        const result = await response.json();
-        if (result.success) {
-          setSubmittedSurveys(result.data || []);
-        }
-      } catch {
-        console.log('could not get');
-      }
-    };
-    fetchSurveys();
-  }, []);
 
   return (
     <div className="transition-all duration-500 opacity-100 scale-100 text-center max-w-2xl mx-auto">
@@ -144,20 +128,6 @@ function ResultsInner() {
               </div>
             ))}
           </div>
-        </div>
-      )}
-      {/* Submitted Surveys Section */}
-      {submittedSurveys.length > 0 && (
-        <div className="mt-10">
-          <h3 className="text-lg font-semibold mb-2">Submitted Surveys</h3>
-          <ul className="space-y-2">
-            {submittedSurveys.map((survey, idx) => (
-              <li key={idx} className="bg-gray-100 dark:bg-gray-800 p-3 rounded">
-                <b>Hobbies:</b> {survey.hobbies.join(', ')} <br />
-                <b>Zip Code:</b> {survey.zip_code}
-              </li>
-            ))}
-          </ul>
         </div>
       )}
     </div>
