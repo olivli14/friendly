@@ -1,38 +1,52 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/app/api/supabase/server';
+import { NextRequest, NextResponse } from "next/server";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
-  const code = url.searchParams.get('code');
-  const next = url.searchParams.get('next');
+  const code = url.searchParams.get("code");
+  const next = url.searchParams.get("next") ?? "/dashboard";
 
-  if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) {
-      return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(error.message)}`, url.origin));
-    }
+  // Prepare the redirect response we will send back to the browser
+  const response = NextResponse.redirect(new URL(next, url.origin));
 
-    // After successful login, check if user has surveys
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      // Check if user has any surveys
-      const { data: surveys } = await supabase
-        .from('surveys')
-        .select('id')
-        .eq('user_id', user.id)
-        .limit(1);
-
-      // If user has surveys, redirect to results; otherwise, redirect to survey page
-      const redirectTo = (surveys?.length ?? 0) > 0 ? '/dashboard/results' : '/';
-      return NextResponse.redirect(new URL(redirectTo, url.origin));
-    }
+  if (!code) {
+    return response;
   }
 
-  // Fallback: use next param or default to home
-  return NextResponse.redirect(new URL(next ?? '/', url.origin));
-}
+  // Create a Supabase client that can read/write cookies on THIS response
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      get(name: string) {
+        return request.cookies.get(name)?.value;
+      },
+      set(name: string, value: string, options: CookieOptions) {
+        response.cookies.set({
+          name,
+          value,
+          ...options,
+        });
+      },
+      remove(name: string, options: CookieOptions) {
+        response.cookies.set({
+          name,
+          value: "",
+          ...options,
+        });
+      },
+    },
+  });
 
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (error) {
+    return NextResponse.redirect(
+      new URL(`/login?error=${encodeURIComponent(error.message)}`, url.origin),
+    );
+  }
+
+  // On success, Supabase has now attached sb-* cookies to `response`
+  return response;
+}
