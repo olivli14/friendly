@@ -122,7 +122,7 @@ export default function FavoritesPage() {
       </div>
 
       <div className="space-y-4 mt-6">
-        {favorites.map((fav, index) => (
+        {favorites.map((fav) => (
           <div
             key={fav.id}
             className="bg-white/80 dark:bg-black/40 p-4 rounded-lg shadow-md"

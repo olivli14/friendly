@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams} from "next/navigation";
 import ActivityMap from "@/app/components/ActivityMap";
 import { Suspense } from "react";
 import Link from "next/link";
 
 function ResultsInner() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const surveyId = searchParams.get("surveyId") || "";
 
   const [activities, setActivities] = useState<
