@@ -81,4 +81,28 @@ export async function getSurveys() {
   return data;
 }
 
+export async function hasSurveys(): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return false;
+  }
+
+  const { data, error } = await supabase
+    .from('surveys')
+    .select('id')
+    .eq('user_id', user.id)
+    .limit(1);
+
+  if (error) {
+    return false;
+  }
+
+  return (data?.length ?? 0) > 0;
+}
+
 

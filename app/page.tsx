@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
@@ -41,7 +42,9 @@ function Survey() {
   const router = useRouter();
   const supabase = createClient();
 
-  const zipCodeSchema = z.string().regex(/^\d{5}(-\d{4})?$/, "Please enter a valid US zip code.");
+  const zipCodeSchema = z
+    .string()
+    .regex(/^\d{5}(-\d{4})?$/, "Please enter a valid US zip code.");
 
   const handleHobbyChange = (hobby: string) => {
     setSelectedHobbies((prev) =>
@@ -54,15 +57,15 @@ function Survey() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setZipError(null);
-  
+
     if (selectedHobbies.length === 0 || !zipCode.trim()) return;
-  
+
     const result = zipCodeSchema.safeParse(zipCode.trim());
     if (!result.success) {
       setZipError(result.error.errors[0].message);
       return;
     }
-  
+
     try {
       const { data: authData } = await supabase.auth.getUser();
       if (!authData.user) {
@@ -71,13 +74,15 @@ function Survey() {
       }
 
       const res = await saveSurvey(selectedHobbies, zipCode.trim());
-  
+
       if (!res.success) {
         setZipError("Failed to save survey: " + res.error);
         return;
       }
-  
-      router.push(`/dashboard/results?surveyId=${encodeURIComponent(res.data.id)}`);
+
+      router.push(
+        `/dashboard/results?surveyId=${encodeURIComponent(res.data.id)}`
+      );
     } catch (err: unknown) {
       let message = "Unexpected error";
       if (err instanceof Error) {
@@ -90,24 +95,29 @@ function Survey() {
       setZipError("Unexpected error: " + message);
     }
   };
-  
+
   return (
     <form
       onSubmit={handleSubmit}
       className="transition-all duration-500 w-full max-w-md mx-auto bg-white/80 dark:bg-black/40 p-6 rounded-xl shadow-lg"
     >
-      <h2 className="text-lg font-semibold mb-6 text-center">Tell us about yourself</h2>
+      <h2 className="text-lg font-semibold mb-6 text-center">
+        Tell us about yourself
+      </h2>
       <div className="mb-6 text-sm text-center">
         <Link className="text-blue-600 hover:underline" href="/login">
           Sign in with Google
         </Link>{" "}
-        to save your results.
+        to save your results. You can fill out this survey multiple times!
       </div>
       <div className="mb-6">
         <label className="block font-medium mb-2">Select your hobbies:</label>
         <div className="grid grid-cols-2 gap-2">
           {hobbyOptions.map((hobby) => (
-            <label key={hobby} className="flex items-center gap-2 cursor-pointer">
+            <label
+              key={hobby}
+              className="flex items-center gap-2 cursor-pointer"
+            >
               <input
                 type="checkbox"
                 value={hobby}
@@ -121,7 +131,9 @@ function Survey() {
         </div>
       </div>
       <div className="mb-6">
-        <label className="block font-medium mb-2" htmlFor="zipCode">Zip Code:</label>
+        <label className="block font-medium mb-2" htmlFor="zipCode">
+          Zip Code:
+        </label>
         <input
           id="zipCode"
           type="text"
@@ -130,7 +142,9 @@ function Survey() {
           onChange={(e) => setZipCode(e.target.value)}
           placeholder="Your zip code..."
         />
-        {zipError && <div className="text-red-500 text-sm mt-1">{zipError}</div>}
+        {zipError && (
+          <div className="text-red-500 text-sm mt-1">{zipError}</div>
+        )}
       </div>
       <button
         type="submit"

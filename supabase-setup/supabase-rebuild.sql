@@ -142,3 +142,43 @@ create policy "survey_activities_insert_own"
     )
   );
 
+-- =========================
+-- Favorites (user-saved activities)
+-- =========================
+create table if not exists public.favorites (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  survey_id uuid references public.surveys(id) on delete set null,
+  activity jsonb not null,
+  activity_name text not null,
+  activity_link text,
+  unique (user_id, activity_name, activity_link)
+);
+
+create index if not exists favorites_user_created_at_idx
+  on public.favorites (user_id, created_at desc);
+
+alter table public.favorites enable row level security;
+
+drop policy if exists "favorites_select_own" on public.favorites;
+create policy "favorites_select_own"
+  on public.favorites
+  for select
+  to authenticated
+  using (auth.uid() = user_id);
+
+drop policy if exists "favorites_insert_own" on public.favorites;
+create policy "favorites_insert_own"
+  on public.favorites
+  for insert
+  to authenticated
+  with check (auth.uid() = user_id);
+
+drop policy if exists "favorites_delete_own" on public.favorites;
+create policy "favorites_delete_own"
+  on public.favorites
+  for delete
+  to authenticated
+  using (auth.uid() = user_id);
+
