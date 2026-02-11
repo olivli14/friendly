@@ -65,50 +65,23 @@ POSTGRES_DATABASE=postgres
 
 ---
 
-## 4. Create the `surveys` table
+## 4. Recreate the database schema (tables + RLS)
 
 1. In Supabase dashboard, go to **SQL Editor**.
-2. New query, paste and run:
+2. Open this repo file: `supabase-rebuild.sql`
+3. Copy/paste it into a new SQL query and run it.
 
-```sql
--- Create surveys table (matches app/lib/actions.ts: hobbies array, zip_code)
-CREATE TABLE public.surveys (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  created_at TIMESTAMPTZ DEFAULT now(),
-  hobbies TEXT[] NOT NULL,
-  zip_code INTEGER NOT NULL
-);
+This creates:
 
--- Enable RLS
-ALTER TABLE public.surveys ENABLE ROW LEVEL SECURITY;
-```
+- `public.profiles` (optional, auto-created on signup)
+- `public.surveys` (saved per user with `user_id`)
+- `public.survey_activities` (cached OpenAI output per survey)
 
-3. Run the query.
+It also enables RLS and adds per-user policies.
 
 ---
 
-## 5. Apply RLS policies
-
-1. Still in **SQL Editor**, open your project’s `supabase-auth-policies.sql`.
-2. Copy its contents and run that SQL in the editor.
-
-It will drop any old policies and create:
-
-- `authenticated users can read surveys`
-- `authenticated users can insert surveys`
-
-If you prefer unauthenticated access for now (e.g. while rebuilding auth), you can temporarily use:
-
-```sql
-CREATE POLICY "Allow read surveys" ON public.surveys FOR SELECT USING (true);
-CREATE POLICY "Allow insert surveys" ON public.surveys FOR INSERT WITH CHECK (true);
-```
-
-You can switch back to the authenticated-only policies from `supabase-auth-policies.sql` once auth is set up.
-
----
-
-## 6. (Optional) Configure Auth (e.g. Google OAuth)
+## 5. Configure Auth (Google OAuth)
 
 If you use Supabase Auth (e.g. Google):
 
@@ -117,16 +90,25 @@ If you use Supabase Auth (e.g. Google):
    - **Site URL**: e.g. `http://localhost:3000` (dev) or your production URL.
    - **Redirect URLs**: add `http://localhost:3000/**` and `https://your-production-domain.com/**`.
 
-Your app already uses `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `app/api/supabase/client.ts` and `server.ts`, so no code changes are needed for a new project—only env and dashboard config.
+Important:
+
+- Set Google’s **Authorized redirect URI** to `https://<your-project-ref>.supabase.co/auth/v1/callback`
+- In Supabase **Auth → URL Configuration**, add redirect URLs for your app:
+  - `http://localhost:3000/**`
+  - `https://your-production-domain.com/**`
+
+This repo includes `/login` (Google sign-in) and `/auth/callback` (exchanges the code for a session).
 
 ---
 
-## 7. Verify the app
+## 6. Verify the app
 
 1. Restart the Next.js dev server (so it picks up new env vars).
-2. In the app, run the flow that **saves a survey** (e.g. submit hobbies + zip).
-3. In Supabase **Table Editor** → `surveys`, confirm a new row appears.
-4. If you use auth, test sign-in and then survey insert again.
+2. In the app, **sign in with Google** at `/login`.
+3. Submit the survey on `/`.
+4. In Supabase **Table Editor**:
+   - `surveys`: confirm a new row appears with your `user_id`
+   - `survey_activities`: confirm OpenAI output was saved after visiting results
 
 ---
 
@@ -135,9 +117,8 @@ Your app already uses `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_
 - [ ] New Supabase project created
 - [ ] All credentials copied from **Project Settings** → API and Database
 - [ ] `.env` and `.env.development.local` updated (no old project IDs/keys left)
-- [ ] `surveys` table created and RLS enabled
-- [ ] `supabase-auth-policies.sql` (or temporary policies) applied
-- [ ] Auth providers and redirect URLs configured if you use Google OAuth
+- [ ] `supabase-rebuild.sql` applied successfully (tables + RLS)
+- [ ] Auth provider (Google) enabled + redirect URLs configured
 - [ ] Dev server restarted and survey save tested
 
 Your old `.env` still contains references to project `mkbldgdnhjbkbaxesfkh`; replace every Supabase/Postgres variable with the new project’s values so nothing points at the deleted project.

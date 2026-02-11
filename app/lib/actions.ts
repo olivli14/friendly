@@ -8,13 +8,33 @@
 //import AuthError from 'next-auth';
 import { createClient } from '@/app/api/supabase/server';
 
-export async function saveSurvey(hobbies: string[], zipCode: number) {
+export async function saveSurvey(hobbies: string[], zipCode: string) {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) {
+    return {
+      success: false,
+      error: userError.message || 'Failed to read user session',
+    };
+  }
+
+  if (!user) {
+    return {
+      success: false,
+      error: 'You must be signed in to save your survey.',
+    };
+  }
 
   const { data, error } = await supabase
     .from('surveys')
-    .insert([{ hobbies, zip_code: zipCode }])
-    .select();
+    .insert([{ user_id: user.id, hobbies, zip_code: zipCode }])
+    .select()
+    .single();
 
 
   if (error) {
@@ -37,9 +57,23 @@ export async function saveSurvey(hobbies: string[], zipCode: number) {
 
 export async function getSurveys() {
   const supabase = await createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) {
+    throw new Error(userError.message);
+  }
+  if (!user) {
+    throw new Error('Not authenticated');
+  }
+
   const { data, error } = await supabase
     .from('surveys')
-    .select('hobbies, zip_code');
+    .select('id, created_at, hobbies, zip_code')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
 
   if (error) {
     throw new Error(error.message);

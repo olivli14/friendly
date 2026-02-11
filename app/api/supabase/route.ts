@@ -4,7 +4,7 @@ import { saveSurvey, getSurveys } from '@/app/lib/actions';
 export async function POST(req: NextRequest) {
   try {
     const { hobbies, zipCode } = await req.json();
-    const data = await saveSurvey(hobbies, zipCode);
+    const data = await saveSurvey(hobbies, String(zipCode));
     return NextResponse.json({ success: true, data });
   } catch (error: unknown) {
     let message = "Unknown error";

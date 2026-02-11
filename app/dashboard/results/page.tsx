@@ -6,8 +6,7 @@ import { Suspense } from "react";
 
 function ResultsInner() {
   const searchParams = useSearchParams();
-  const hobbies = searchParams.get("hobbies")?.split(",") || [];
-  const zip = searchParams.get("zip") || "";
+  const surveyId = searchParams.get("surveyId") || "";
 
   const [activities, setActivities] = useState<Array<{
     name: string;
@@ -17,47 +16,44 @@ function ResultsInner() {
     link: string;
     coordinates: { lat: number; lng: number };
   }>>([]);
+  const [hobbies, setHobbies] = useState<string[]>([]);
+  const [zip, setZip] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!hobbies.length || !zip) return;
-    // Only call OpenAI API if this is a fresh submission (not just a reload)
-    const submissionKey = `survey_submitted_${hobbies.join('_')}_${zip}`;
-    const hasSubmitted = sessionStorage.getItem(submissionKey);
-    if (hasSubmitted) return;
-    const fetchActivities = async () => {
+    if (!surveyId) return;
+    const fetchSurveyActivities = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch("/api/generate-activities", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ answers: [hobbies, zip] }),
-        });
+        const response = await fetch(`/api/surveys/${encodeURIComponent(surveyId)}`);
         if (!response.ok) {
-          throw new Error("Failed to generate activities");
+          throw new Error("Failed to load activities");
         }
         const data = await response.json();
-        setActivities(data.activities);
-        // Mark as submitted so we don't call again on reload
-        sessionStorage.setItem(submissionKey, "true");
+        setActivities(data.activities || []);
+        setHobbies(data.survey?.hobbies || []);
+        setZip(data.survey?.zip_code || "");
       } catch (err) {
-        setError("Failed to generate activities. Please try again.");
+        setError("Failed to load activities. Please try again.");
         console.error("Error:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchActivities();
-  }, [hobbies, zip]);
+    fetchSurveyActivities();
+  }, [surveyId]);
 
 
   return (
     <div className="transition-all duration-500 opacity-100 scale-100 text-center max-w-2xl mx-auto">
       <h2 className="text-xl font-bold mb-4">Your Personalized Activities</h2>
+      {!surveyId && (
+        <div className="text-red-500 mb-4">
+          Missing survey id. Please submit the survey again.
+        </div>
+      )}
       <div className="text-left inline-block mb-6">
         <div>
           <b>Hobbies:</b> {hobbies.join(", ")}

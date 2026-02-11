@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { saveSurvey } from "@/app/lib/actions";
+import Link from "next/link";
+import { createClient } from "@/app/api/supabase/client";
 
 function Survey() {
   const hobbyOptions = [
@@ -37,6 +39,7 @@ function Survey() {
   const [zipCode, setZipCode] = useState("");
   const [zipError, setZipError] = useState<string | null>(null);
   const router = useRouter();
+  const supabase = createClient();
 
   const zipCodeSchema = z.string().regex(/^\d{5}(-\d{4})?$/, "Please enter a valid US zip code.");
 
@@ -61,21 +64,20 @@ function Survey() {
     }
   
     try {
-      const res = await saveSurvey(selectedHobbies, Number(zipCode.trim()));
+      const { data: authData } = await supabase.auth.getUser();
+      if (!authData.user) {
+        setZipError("Please sign in with Google first.");
+        return;
+      }
+
+      const res = await saveSurvey(selectedHobbies, zipCode.trim());
   
       if (!res.success) {
         setZipError("Failed to save survey: " + res.error);
         return;
       }
   
-      const params = new URLSearchParams({
-        hobbies: selectedHobbies.join(","),
-        zip: zipCode.trim(),
-      });
-  
-    
-      // Also navigate to /dashboard/results
-      router.push(`/dashboard/results?${params.toString()}`);
+      router.push(`/dashboard/results?surveyId=${encodeURIComponent(res.data.id)}`);
     } catch (err: unknown) {
       let message = "Unexpected error";
       if (err instanceof Error) {
@@ -95,6 +97,12 @@ function Survey() {
       className="transition-all duration-500 w-full max-w-md mx-auto bg-white/80 dark:bg-black/40 p-6 rounded-xl shadow-lg"
     >
       <h2 className="text-lg font-semibold mb-6 text-center">Tell us about yourself</h2>
+      <div className="mb-6 text-sm text-center">
+        <Link className="text-blue-600 hover:underline" href="/login">
+          Sign in with Google
+        </Link>{" "}
+        to save your results.
+      </div>
       <div className="mb-6">
         <label className="block font-medium mb-2">Select your hobbies:</label>
         <div className="grid grid-cols-2 gap-2">
