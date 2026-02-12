@@ -18,6 +18,8 @@ export default function FavoritesPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
+
+    console.log("Document cookies:", document.cookie);
     const fetchFavorites = async () => {
       try {
         const response = await fetch("/api/favorites", { credentials: "include" });

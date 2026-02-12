@@ -24,6 +24,10 @@ export async function middleware(request: NextRequest) {
           response.cookies.set({
             name,
             value: "",
+            path: "/",
+            sameSite: "lax",
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 0,
             ...options,
           })
         },
