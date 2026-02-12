@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
     cookieEncoding: "raw",
     cookieOptions: {
       path: "/",
-      sameSite: "lax" as const,
+      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
       
     },
