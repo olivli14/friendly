@@ -1,73 +1,53 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+  let supabaseResponse = NextResponse.next({
+    request: { headers: new Headers(request.headers) },
   });
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookieEncoding: "raw",
+    cookieOptions: {
+      path: '/',
+      sameSite: 'lax' as const,
+      secure: process.env.NODE_ENV === 'production',
+    },
     cookies: {
-      get(name: string) {
-        return request.cookies.get(name)?.value;
+      getAll() {
+        return request.cookies.getAll();
       },
-      set(name: string, value: string, options: CookieOptions) {
-        request.cookies.set({
-          name,
-          value,
-          ...options,
-        });
-        response = NextResponse.next({
-          request: {
-            headers: request.headers,
-          },
-        });
-        response.cookies.set({
-          name,
-          value,
-          ...options,
-        });
-      },
-      remove(name: string, options: CookieOptions) {
-        request.cookies.set({
-          name,
-          value: '',
-          ...options,
-        });
-        response = NextResponse.next({
-          request: {
-            headers: request.headers,
-          },
-        });
-        response.cookies.set({
-          name,
-          value: '',
-          ...options,
-        });
+      setAll(cookiesToSet) {
+        // No-op: never send Set-Cookie from middleware so we don't refresh or clear
+        // the session. We still run getUser() to read the session (e.g. for redirects).
+        void cookiesToSet;
       },
     },
   });
 
-  // Refresh session if expired - this keeps cookies alive
+  // Read session only; we don't persist any cookie changes (setAll is no-op).
   await supabase.auth.getUser();
 
-  return response;
+  return supabaseResponse;
 }
 
 export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
+     * - (empty/root) GET / runs middleware and can clear session cookies
      * - _next/static (static files)
      * - _next/image (image optimization files)
+     * - _next/data (RSC payloads; middleware clears cookies on client-side nav)
      * - favicon.ico (favicon file)
-     * - public folder
+     * - auth/callback (sets session cookies; middleware would clear them)
+     * - dashboard (middleware clears cookies on page loads)
+     * - api (middleware clears cookies on API requests; routes read cookies from request)
+     * - image files
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|_next/data|favicon.ico|auth/callback|dashboard|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|$).*)',
   ],
 };

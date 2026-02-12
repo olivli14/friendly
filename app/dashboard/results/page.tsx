@@ -27,6 +27,8 @@ function ResultsInner() {
   const [currentSurveyId, setCurrentSurveyId] = useState<string>(surveyId);
   const [savingIndex, setSavingIndex] = useState<number | null>(null);
   const [savedIndexes, setSavedIndexes] = useState<Set<number>>(new Set());
+  // Defer Mapbox load so auth cookies aren't cleared by a request it triggers (e.g. prefetch).
+  const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {
     const fetchSurveyActivities = async () => {
@@ -36,7 +38,7 @@ function ResultsInner() {
         const url = surveyId
           ? `/api/surveys/${encodeURIComponent(surveyId)}`
           : "/api/surveys/latest";
-        const response = await fetch(url);
+        const response = await fetch(url, { credentials: "include" });
         if (!response.ok) {
           const { error: apiError } = await response
             .json()
@@ -64,6 +66,13 @@ function ResultsInner() {
     fetchSurveyActivities();
   }, [surveyId]);
 
+  // Load map only after data is ready and a delay, so "save to favorites" can succeed before Mapbox runs.
+  useEffect(() => {
+    if (activities.length === 0) return;
+    const t = setTimeout(() => setShowMap(true), 2000);
+    return () => clearTimeout(t);
+  }, [activities.length]);
+
   const handleFavorite = async (activityIndex: number) => {
     const activity = activities[activityIndex];
     if (!activity || !currentSurveyId) return;
@@ -74,6 +83,7 @@ function ResultsInner() {
 
       const response = await fetch("/api/favorites", {
         method: isSaved ? "DELETE" : "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -91,9 +101,14 @@ function ResultsInner() {
       });
 
       if (!response.ok) {
-        const { error: apiError } = await response.json().catch(() => ({
+        const body = await response.json().catch(() => ({
           error: isSaved ? "Failed to remove favorite" : "Failed to save favorite",
         }));
+        const apiError = body?.error;
+        // Log exact auth error for debugging (e.g. code: "invalid_refresh_token")
+        if (response.status === 401) {
+          console.error("[favorites] 401:", body?.code ?? apiError, apiError);
+        }
         throw new Error(
           apiError ||
             (isSaved ? "Failed to remove favorite" : "Failed to save favorite")
@@ -155,7 +170,13 @@ function ResultsInner() {
           {/* Map Section */}
           <div className="mb-6">
             <h4 className="text-md font-medium mb-3">Activity Locations</h4>
-            <ActivityMap activities={activities} />
+            {showMap ? (
+              <ActivityMap activities={activities} />
+            ) : (
+              <div className="h-64 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400">
+                Loading map…
+              </div>
+            )}
           </div>
           {/* Activities List */}
           <div className="space-y-4">

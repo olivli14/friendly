@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import ActivityMap from "@/app/components/ActivityMap";
+import AuthDebugPanel from "@/app/components/AuthDebugPanel";
 import type { Activity } from "@/app/lib/openai";
 
 type FavoriteRow = {
@@ -19,7 +20,7 @@ export default function FavoritesPage() {
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const response = await fetch("/api/favorites");
+        const response = await fetch("/api/favorites", { credentials: "include" });
         if (!response.ok) {
           const { error: apiError } = await response.json().catch(() => ({ error: "Failed to load favorites" }));
           throw new Error(apiError || "Failed to load favorites");
@@ -43,6 +44,7 @@ export default function FavoritesPage() {
       setDeletingId(favorite.id);
       const response = await fetch("/api/favorites", {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -69,51 +71,49 @@ export default function FavoritesPage() {
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto text-center">
+      <div className="max-w-2xl mx-auto">
+        <AuthDebugPanel />
+        <div className="text-center">
         <h1 className="text-2xl font-semibold mb-4">Favorites</h1>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
         <p className="text-gray-600 dark:text-gray-300">Loading favorites...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="max-w-2xl mx-auto text-center">
+      <div className="max-w-2xl mx-auto">
+        <AuthDebugPanel />
+        <div className="text-center">
         <h1 className="text-2xl font-semibold mb-4">Favorites</h1>
         <p className="text-red-500">Failed to load favorites: {error}</p>
+        </div>
       </div>
     );
   }
 
   if (favorites.length === 0) {
     return (
-      <div className="max-w-2xl mx-auto text-center">
+      <div className="max-w-2xl mx-auto">
+        <AuthDebugPanel />
+        <div className="text-center">
         <h1 className="text-2xl font-semibold mb-4">Favorites</h1>
         <p className="text-gray-600 dark:text-gray-300">
           You don&apos;t have any favorite activities yet. Generate some results and tap the heart
           icon to save them here.
         </p>
+        </div>
       </div>
     );
   }
 
   const activities = favorites.map((f) => f.activity);
 
-  if (favorites.length === 0) {
-    return (
-      <div className="max-w-2xl mx-auto text-center">
-        <h1 className="text-2xl font-semibold mb-4">Favorites</h1>
-        <p className="text-gray-600 dark:text-gray-300">
-          You don&apos;t have any favorite activities yet. Generate some results and tap the heart
-          icon to save them here.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="transition-all duration-500 opacity-100 scale-100 max-w-3xl mx-auto">
+      <AuthDebugPanel />
       <h1 className="text-2xl font-semibold mb-4 text-center">Your Favorite Activities</h1>
 
       <div className="mb-6">

@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { createClient } from '@/app/api/supabase/server';
 import type { Activity } from '@/app/lib/openai';
 
 export async function GET() {
   try {
+    const cookieStore = await cookies();
+    const authCookies = cookieStore.getAll().filter((c) => c.name.includes('auth-token'));
+    console.error('[api/favorites GET] auth cookie count:', authCookies.length, 'names:', authCookies.map((c) => c.name));
+
     const supabase = await createClient();
 
     const {
@@ -12,7 +17,12 @@ export async function GET() {
     } = await supabase.auth.getUser();
 
     if (userError) {
-      return NextResponse.json({ error: userError.message }, { status: 401 });
+      const code = (userError as { code?: string }).code;
+      console.error('[api/favorites GET] auth error:', code ?? userError.message, userError.message);
+      return NextResponse.json(
+        { error: userError.message, code: code ?? undefined },
+        { status: 401 }
+      );
     }
     if (!user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -37,6 +47,10 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const cookieStore = await cookies();
+    const authCookies = cookieStore.getAll().filter((c) => c.name.includes('auth-token'));
+    console.error('[api/favorites POST] auth cookie count:', authCookies.length, 'names:', authCookies.map((c) => c.name));
+
     const supabase = await createClient();
 
     const {
@@ -45,7 +59,12 @@ export async function POST(req: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (userError) {
-      return NextResponse.json({ error: userError.message }, { status: 401 });
+      const code = (userError as { code?: string }).code;
+      console.error('[api/favorites POST] auth error:', code ?? userError.message, userError.message);
+      return NextResponse.json(
+        { error: userError.message, code: code ?? undefined },
+        { status: 401 }
+      );
     }
     if (!user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -93,7 +112,12 @@ export async function DELETE(req: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (userError) {
-      return NextResponse.json({ error: userError.message }, { status: 401 });
+      const code = (userError as { code?: string }).code;
+      console.error('[api/favorites DELETE] auth error:', code ?? userError.message, userError.message);
+      return NextResponse.json(
+        { error: userError.message, code: code ?? undefined },
+        { status: 401 }
+      );
     }
     if (!user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
