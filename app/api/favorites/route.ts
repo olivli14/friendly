@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createClient } from '@/app/api/supabase/server';
+import { createClientFromRequest } from '@/app/api/supabase/server';
 import type { Activity } from '@/app/lib/openai';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const authCookies = cookieStore.getAll().filter((c) => c.name.includes('auth-token'));
-    console.error('[api/favorites GET] auth cookie count:', authCookies.length, 'names:', authCookies.map((c) => c.name));
-
-    const supabase = await createClient();
+    const supabase = createClientFromRequest(req);
 
     const {
       data: { user },
@@ -47,11 +42,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const authCookies = cookieStore.getAll().filter((c) => c.name.includes('auth-token'));
-    console.error('[api/favorites POST] auth cookie count:', authCookies.length, 'names:', authCookies.map((c) => c.name));
-
-    const supabase = await createClient();
+    const supabase = createClientFromRequest(req);
 
     const {
       data: { user },
@@ -104,7 +95,7 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = createClientFromRequest(req);
 
     const {
       data: { user },
