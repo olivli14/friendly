@@ -3,33 +3,30 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next()
+  let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name) {
-          return request.cookies.get(name)?.value
+        getAll() {
+          return request.cookies.getAll()
         },
-        set(name, value, options) {
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-        },
-        remove(name, options) {
-          response.cookies.set({
-            name,
-            value: "",
-            path: "/",
-            sameSite: "lax",
-            secure: process.env.NODE_ENV === "production",
-            maxAge: 0,
-            ...options,
-          })
+        setAll(cookiesToSet) {
+          // Update request cookies so downstream Server Components see the
+          // refreshed values when they call cookies().
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
+
+          // Recreate the response so it carries the updated request headers.
+          supabaseResponse = NextResponse.next({ request })
+
+          // Also set Set-Cookie headers on the response so the browser stores them.
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
         },
       },
     }
@@ -38,7 +35,7 @@ export async function middleware(request: NextRequest) {
   // REQUIRED — refreshes session
   await supabase.auth.getUser()
 
-  return response
+  return supabaseResponse
 }
 
 export const config = {

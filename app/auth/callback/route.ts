@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 
 export const runtime = "nodejs";
 
@@ -67,28 +67,14 @@ export async function GET(request: NextRequest) {
   });
 
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookieOptions: {
-      path: "/",
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    },
     cookies: {
-      get(name: string) {
-        return request.cookies.get(name)?.value;
+      getAll() {
+        return request.cookies.getAll();
       },
-      set(name: string, value: string, options: CookieOptions) {
-        response.cookies.set({
-          name,
-          value,
-          ...options,
-        });
-      },
-      remove(name: string, options: CookieOptions) {
-        response.cookies.set({
-          name,
-          value: "",
-          ...options,
-        });
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options)
+        );
       },
     },
   });
