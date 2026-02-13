@@ -10,7 +10,7 @@ interface SurveyFormProps {
   userId: string;
 }
 
-export default function SurveyForm({ recentSurvey}: SurveyFormProps) {
+export default function SurveyForm({ recentSurvey }: SurveyFormProps) {
   const hobbyOptions = [
     "Gardening","Baking","Cooking","Gaming","Dancing","Arts","Movies","Music",
     "Hiking","Photography","Traveling","Reading","Writing","Sports","Crafts","Yoga",
@@ -20,6 +20,7 @@ export default function SurveyForm({ recentSurvey}: SurveyFormProps) {
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(recentSurvey?.hobbies ?? []);
   const [zipCode, setZipCode] = useState(recentSurvey?.zip_code ?? "");
   const [zipError, setZipError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
 
   const zipCodeSchema = z
@@ -47,6 +48,7 @@ export default function SurveyForm({ recentSurvey}: SurveyFormProps) {
     }
 
     try {
+      setSubmitting(true);
       const res = await saveSurvey(selectedHobbies, zipCode.trim());
 
       if (!res.success) {
@@ -54,63 +56,77 @@ export default function SurveyForm({ recentSurvey}: SurveyFormProps) {
         return;
       }
 
-      // Redirect to results page
       router.push(`/dashboard/results?surveyId=${encodeURIComponent(res.data.id)}`);
     } catch (err: unknown) {
       let message = "Unexpected error";
       if (err instanceof Error) message = err.message;
       setZipError("Unexpected error: " + message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="transition-all duration-500 w-full max-w-md mx-auto bg-white/80 dark:bg-black/40 p-6 rounded-xl shadow-lg"
+      className="w-full max-w-lg mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-black/20 border border-gray-100 dark:border-white/10 p-8"
     >
-      <h2 className="text-lg font-semibold mb-6 text-center">
+      <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1 text-center">
         Tell us about yourself
       </h2>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 text-center">
+        Select your hobbies and zip code to get personalized activity suggestions.
+      </p>
 
-      <div className="mb-6">
-        <label className="block font-medium mb-2">Select your hobbies:</label>
-        <div className="grid grid-cols-2 gap-2">
-          {hobbyOptions.map((hobby) => (
-            <label key={hobby} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                value={hobby}
-                checked={selectedHobbies.includes(hobby)}
-                onChange={() => handleHobbyChange(hobby)}
-                className="accent-blue-500"
-              />
-              <span>{hobby}</span>
-            </label>
-          ))}
+      {/* Hobbies */}
+      <fieldset className="mb-8">
+        <legend className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+          Your hobbies
+        </legend>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {hobbyOptions.map((hobby) => {
+            const selected = selectedHobbies.includes(hobby);
+            return (
+              <button
+                key={hobby}
+                type="button"
+                onClick={() => handleHobbyChange(hobby)}
+                className={`px-3 py-2 rounded-xl text-sm font-medium transition-all border ${
+                  selected
+                    ? "bg-teal-600 text-white border-teal-600 shadow-sm"
+                    : "bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:border-teal-300 hover:text-teal-700 dark:hover:text-teal-400"
+                }`}
+              >
+                {hobby}
+              </button>
+            );
+          })}
         </div>
-      </div>
+      </fieldset>
 
-      <div className="mb-6">
-        <label className="block font-medium mb-2" htmlFor="zipCode">
-          Zip Code:
+      {/* Zip code */}
+      <div className="mb-8">
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2" htmlFor="zipCode">
+          Zip code
         </label>
         <input
           id="zipCode"
           type="text"
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800"
+          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-shadow"
           value={zipCode}
           onChange={(e) => setZipCode(e.target.value)}
-          placeholder="Your zip code..."
+          placeholder="e.g. 95032"
         />
-        {zipError && <div className="text-red-500 text-sm mt-1">{zipError}</div>}
+        {zipError && <p className="text-red-500 text-sm mt-2">{zipError}</p>}
       </div>
 
+      {/* Submit */}
       <button
         type="submit"
-        className="py-2 px-4 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors w-full"
-        disabled={selectedHobbies.length === 0 || !zipCode.trim()}
+        className="w-full py-3 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 transition-colors shadow-sm disabled:opacity-60"
+        disabled={selectedHobbies.length === 0 || !zipCode.trim() || submitting}
       >
-        Submit
+        {submitting ? "Submitting..." : "Get my results"}
       </button>
     </form>
   );

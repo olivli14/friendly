@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ActivityMap from "@/app/components/ActivityMap";
 import type { Activity } from "@/app/lib/openai";
+import Link from "next/link";
 
 type FavoriteRow = {
   id: string;
@@ -23,9 +24,7 @@ export default function FavoritesList({ initialFavorites }: { initialFavorites: 
       const response = await fetch("/api/favorites", {
         method: "DELETE",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           activityName: favorite.activity.name,
           activityLink: favorite.activity.link ?? null,
@@ -48,74 +47,79 @@ export default function FavoritesList({ initialFavorites }: { initialFavorites: 
     }
   };
 
+  const costColor = (cost: string) => {
+    if (cost === "Free") return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300";
+    if (cost === "$") return "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300";
+    if (cost === "$$") return "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300";
+    return "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300";
+  };
+
   if (favorites.length === 0) {
-    return <p className="text-gray-600 dark:text-gray-300 text-center">
-      You do not have any favorite activities yet. Generate some results and tap the heart icon to save them here.
-    </p>;
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center mb-4">
+          <span className="text-2xl text-gray-400">&#9825;</span>
+        </div>
+        <p className="text-gray-500 dark:text-gray-400 mb-4">
+          No favorites yet. Tap the heart icon on your results to save them here.
+        </p>
+        <Link
+          href="/dashboard/results"
+          className="px-5 py-2 rounded-xl bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 transition-colors"
+        >
+          View results
+        </Link>
+      </div>
+    );
   }
 
   const activities = favorites.map((f) => f.activity);
 
   return (
     <>
-      <div className="mb-6">
-        <h2 className="text-lg font-medium mb-3">Favorite Locations</h2>
+      {/* Map */}
+      <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-white/10 mb-8">
         <ActivityMap activities={activities} />
       </div>
 
-      <div className="space-y-4 mt-6">
+      {/* Favorite cards */}
+      <div className="space-y-4">
         {favorites.map((fav) => (
-          <div key={fav.id} className="bg-white/80 dark:bg-black/40 p-4 rounded-lg shadow-md">
-            <div className="flex justify-between items-start mb-2">
-              <div className="flex items-center gap-2">
+          <div
+            key={fav.id}
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow p-5"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div className="flex items-center gap-3">
                 <button
                   type="button"
                   aria-label="Remove from favorites"
                   onClick={() => handleRemove(fav)}
                   disabled={deletingId === fav.id}
-                  className="text-red-500 hover:text-red-600 disabled:opacity-50 transition-colors"
+                  className="text-xl text-rose-500 hover:text-rose-600 disabled:opacity-50 transition-transform hover:scale-110"
                   title="Remove from favorites"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-5 h-5"
-                  >
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                  </svg>
+                  &#9829;
                 </button>
-                <h3 className="font-semibold text-lg">{fav.activity.name}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{fav.activity.name}</h3>
               </div>
-              <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  fav.activity.costRange === "Free"
-                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                    : fav.activity.costRange === "$"
-                    ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                    : fav.activity.costRange === "$$"
-                    ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-                    : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                }`}>
+              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${costColor(fav.activity.costRange)}`}>
                 {fav.activity.costRange}
               </span>
             </div>
-            <p className="text-gray-700 dark:text-gray-300 mb-2">{fav.activity.description}</p>
-            <p className="text-sm text-blue-600 dark:text-blue-400 italic mb-3">
-              Why this matches you: {fav.activity.whyItMatches}
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{fav.activity.description}</p>
+            <p className="text-sm text-teal-600 dark:text-teal-400 italic mb-3">
+              {fav.activity.whyItMatches}
             </p>
             {fav.activity.link && (
               <a
                 href={fav.activity.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center px-3 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition-colors"
+                className="inline-flex items-center gap-1 text-sm font-medium text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300"
               >
-                Learn More
-                <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                Learn more
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
               </a>

@@ -3,33 +3,34 @@ import { createClient } from "@/app/api/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-// Run on every request so we can read the user's auth cookies
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const supabase = await createClient();
 
-  // Get authenticated user from cookies
   const {
     data: { user },
     error: userError,
   } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    // User not authenticated → show sign in option
     return (
-      <div className="max-w-2xl mx-auto text-center">
-        <h1 className="text-2xl font-semibold mb-4">Welcome to Quokka Bay</h1>
-        <p className="mb-6">
-          You are not signed in. To save your survey results and favorites, please sign in with Google.
-        </p>
-        <Link
-          href="/login"
-          className="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
-        >
-          Sign in with Google
-        </Link>
-      </div>
+      <main className="min-h-screen flex items-center justify-center p-6">
+        <div className="max-w-md text-center">
+          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent mb-3">
+            Quokka Bay
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+            Discover personalized activities, events, and spots near you based on your hobbies.
+          </p>
+          <Link
+            href="/login"
+            className="inline-flex items-center px-6 py-3 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 transition-colors shadow-lg shadow-teal-600/20"
+          >
+            Get started
+          </Link>
+        </div>
+      </main>
     );
   }
 
@@ -43,17 +44,15 @@ export default async function HomePage() {
 
   const recentSurvey = surveys?.[0] ?? null;
 
-  // Returning users who already have a survey → send them to results
+  // Returning users who already have a survey -> send them to results
   if (recentSurvey) {
     redirect("/dashboard/results");
   }
 
-  // First-time users → show the survey form
+  // First-time users -> show the survey form
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full">
-        <SurveyForm recentSurvey={null} userId={user.id} />
-      </main>
-    </div>
+    <main className="min-h-screen flex items-center justify-center p-6">
+      <SurveyForm recentSurvey={null} userId={user.id} />
+    </main>
   );
 }

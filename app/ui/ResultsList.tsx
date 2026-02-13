@@ -54,36 +54,77 @@ export default function ResultsList({ survey }: Props) {
     }
   };
 
-  return (
-    <div className="max-w-2xl mx-auto text-left">
-      <h2 className="text-xl font-bold mb-4">Your Personalized Activities</h2>
-      <div><b>Hobbies:</b> {survey.hobbies.join(", ")}</div>
-      <div><b>Zip Code:</b> {survey.zip}</div>
+  const costColor = (cost: string) => {
+    if (cost === "Free") return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300";
+    if (cost === "$") return "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300";
+    if (cost === "$$") return "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300";
+    return "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300";
+  };
 
-      <div className="my-6">
+  return (
+    <div>
+      {/* Survey info pills */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {survey.hobbies.map((hobby) => (
+          <span
+            key={hobby}
+            className="px-3 py-1 rounded-full text-xs font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300"
+          >
+            {hobby}
+          </span>
+        ))}
+        <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300">
+          {survey.zip}
+        </span>
+      </div>
+
+      {/* Map */}
+      <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-white/10 mb-8">
         <ActivityMap activities={survey.activities} />
       </div>
 
+      {/* Activity cards */}
       <div className="space-y-4">
         {survey.activities.map((activity, index) => (
-          <div key={index} className="bg-white/80 dark:bg-black/40 p-4 rounded-lg shadow-md">
-            <div className="flex justify-between items-start mb-2">
-              <div className="flex items-center gap-2">
+          <div
+            key={index}
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow p-5"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleFavorite(index)}
                   disabled={savingIndex === index}
-                  className="text-red-500 hover:text-red-600 disabled:opacity-50"
+                  className="text-xl transition-transform hover:scale-110 disabled:opacity-50"
+                  aria-label={savedIndexes.has(index) ? "Remove from favorites" : "Add to favorites"}
                 >
-                  {savedIndexes.has(index) ? "♥" : "♡"}
+                  {savedIndexes.has(index) ? (
+                    <span className="text-rose-500">&#9829;</span>
+                  ) : (
+                    <span className="text-gray-300 dark:text-gray-600 hover:text-rose-400">&#9825;</span>
+                  )}
                 </button>
-                <h4 className="font-semibold">{activity.name}</h4>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{activity.name}</h3>
               </div>
-              <span className="px-2 py-1 rounded text-xs font-medium bg-gray-200 dark:bg-gray-700">
+              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${costColor(activity.costRange)}`}>
                 {activity.costRange}
               </span>
             </div>
-            <p>{activity.description}</p>
-            <p className="text-sm italic">{activity.whyItMatches}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{activity.description}</p>
+            <p className="text-sm text-teal-600 dark:text-teal-400 italic">{activity.whyItMatches}</p>
+            {activity.link && (
+              <a
+                href={activity.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300"
+              >
+                Learn more
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            )}
           </div>
         ))}
       </div>

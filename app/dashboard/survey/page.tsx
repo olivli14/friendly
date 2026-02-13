@@ -17,7 +17,7 @@ export default async function NewSurveyPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-8">
+    <div className="max-w-lg mx-auto py-8">
       <SurveyForm recentSurvey={null} userId={user.id} />
     </div>
   );
