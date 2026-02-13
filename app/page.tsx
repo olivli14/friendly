@@ -3,6 +3,9 @@ import { createClient } from "@/app/api/supabase/server";
 import AuthDebugPanel from "@/app/components/AuthDebugPanel";
 import Link from "next/link";
 
+// Run on every request so we can read the user's auth cookies
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const supabase = await createClient();
 
