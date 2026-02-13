@@ -33,11 +33,13 @@ export async function middleware(request: NextRequest) {
   )
 
   // Don't attempt to refresh the session on the auth callback route.
-  // The callback handler exchanges the OAuth code and sets fresh cookies;
-  // running getUser() here before that exchange would find no session and
-  // could emit Set-Cookie headers that conflict with the ones the handler sets.
   if (!request.nextUrl.pathname.startsWith("/auth/callback")) {
-    await supabase.auth.getUser()
+    const allCookies = request.cookies.getAll()
+    const sbCookies = allCookies.filter(c => c.name.startsWith("sb-"))
+    console.log(`[middleware] ${request.nextUrl.pathname} — ${sbCookies.length} sb-* cookies:`, sbCookies.map(c => c.name))
+
+    const { data, error } = await supabase.auth.getUser()
+    console.log(`[middleware] getUser result:`, { userId: data?.user?.id ?? null, error: error?.message ?? null })
   }
 
   return supabaseResponse
