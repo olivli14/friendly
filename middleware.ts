@@ -32,8 +32,13 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // REQUIRED — refreshes session
-  await supabase.auth.getUser()
+  // Don't attempt to refresh the session on the auth callback route.
+  // The callback handler exchanges the OAuth code and sets fresh cookies;
+  // running getUser() here before that exchange would find no session and
+  // could emit Set-Cookie headers that conflict with the ones the handler sets.
+  if (!request.nextUrl.pathname.startsWith("/auth/callback")) {
+    await supabase.auth.getUser()
+  }
 
   return supabaseResponse
 }
