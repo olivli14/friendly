@@ -32,23 +32,11 @@ export async function GET(request: NextRequest) {
     }
   );
 
-  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
     errorRedirect.searchParams.set("error", error.message);
     return NextResponse.redirect(errorRedirect);
-  }
-
-  // Re-set the session without provider_token / provider_refresh_token.
-  // Google's OAuth tokens are large and can push the total cookie size past
-  // browser limits (~4 KB per cookie). When that happens the cookies are
-  // silently truncated, the middleware can't reassemble the session on the
-  // next request, and the user appears logged-out.
-  if (data.session) {
-    await supabase.auth.setSession({
-      access_token: data.session.access_token,
-      refresh_token: data.session.refresh_token,
-    });
   }
 
   return response;

@@ -2,6 +2,7 @@ import SurveyForm from "@/app/ui/SurveyForm";
 import { createClient } from "@/app/api/supabase/server";
 import AuthDebugPanel from "@/app/components/AuthDebugPanel";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 // Run on every request so we can read the user's auth cookies
 export const dynamic = "force-dynamic";
@@ -44,10 +45,16 @@ export default async function HomePage() {
 
   const recentSurvey = surveys?.[0] ?? null;
 
+  // Returning users who already have a survey → send them to results
+  if (recentSurvey) {
+    redirect("/dashboard/results");
+  }
+
+  // First-time users → show the survey form
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full">
-        <SurveyForm recentSurvey={recentSurvey} userId={user.id} />
+        <SurveyForm recentSurvey={null} userId={user.id} />
       </main>
     </div>
   );
