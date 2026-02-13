@@ -16,6 +16,8 @@ export default async function ResultsPage({
     data: { user },
     error: userError,
   } = await supabase.auth.getUser();
+  console.log("RESULTS USER:", user?.id);
+
 
   if (userError || !user) {
     return (
@@ -111,14 +113,6 @@ export default async function ResultsPage({
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="flex justify-end mb-4">
-        <Link
-          href="/"
-          className="inline-flex items-center px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors"
-        >
-          Fill out a new survey
-        </Link>
-      </div>
       <ResultsList
         survey={{
           id: survey.id,

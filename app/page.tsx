@@ -1,6 +1,5 @@
 import SurveyForm from "@/app/ui/SurveyForm";
 import { createClient } from "@/app/api/supabase/server";
-import AuthDebugPanel from "@/app/components/AuthDebugPanel";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -20,7 +19,6 @@ export default async function HomePage() {
     // User not authenticated → show sign in option
     return (
       <div className="max-w-2xl mx-auto text-center">
-        <AuthDebugPanel />
         <h1 className="text-2xl font-semibold mb-4">Welcome to Quokka Bay</h1>
         <p className="mb-6">
           You are not signed in. To save your survey results and favorites, please sign in with Google.

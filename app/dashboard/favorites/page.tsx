@@ -1,5 +1,4 @@
 import { createClient } from "@/app/api/supabase/server";
-import AuthDebugPanel from "@/app/components/AuthDebugPanel";
 import FavoritesList from "@/app/ui/FavoritesList";
 
 export default async function FavoritesPage() {
@@ -14,7 +13,6 @@ export default async function FavoritesPage() {
   if (userError || !user) {
     return (
       <div className="max-w-2xl mx-auto text-center">
-        <AuthDebugPanel />
         <p className="text-red-500 mt-4">
           You are not signed in. Please log in.
         </p>
@@ -32,7 +30,6 @@ export default async function FavoritesPage() {
   if (error) {
     return (
       <div className="max-w-2xl mx-auto text-center">
-        <AuthDebugPanel />
         <p className="text-red-500 mt-4">Failed to load favorites: {error.message}</p>
       </div>
     );
@@ -40,7 +37,6 @@ export default async function FavoritesPage() {
 
   return (
     <div className="max-w-3xl mx-auto transition-all duration-500 opacity-100 scale-100">
-      <AuthDebugPanel />
       <h1 className="text-2xl font-semibold mb-4 text-center">
         Your Favorite Activities
       </h1>
