@@ -1,18 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient, createChunks, type CookieOptions } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 export const runtime = "nodejs";
-
-function getAuthTokenCookieKey(): string {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!url) return "sb-auth-token";
-  try {
-    const ref = new URL(url).hostname.split(".")[0];
-    return ref ? `sb-${ref}-auth-token` : "sb-auth-token";
-  } catch {
-    return "sb-auth-token";
-  }
-}
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -78,12 +67,10 @@ export async function GET(request: NextRequest) {
   });
 
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookieEncoding: "raw",
     cookieOptions: {
       path: "/",
-      sameSite: "none",
+      sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      
     },
     cookies: {
       get(name: string) {
@@ -106,7 +93,7 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
     const errorRedirectUrl = new URL(
@@ -117,32 +104,6 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: { "Content-Type": "text/html" },
     });
-  }
-
-  // Replace session cookies with a smaller payload (strip provider_token) so the
-  // Cookie header stays under size limits and the server can read the session.
-  const session = data.session;
-  if (session) {
-    const cookieKey = getAuthTokenCookieKey();
-    const cookieOptions: CookieOptions = {
-      path: "/",
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7,
-    };
-    // Clear existing chunked cookies
-    const existingNames = response.cookies.getAll().map((c) => c.name);
-    for (const name of existingNames) {
-      if (name === cookieKey || name.startsWith(cookieKey + ".")) {
-        response.cookies.set({ name, value: "", maxAge: 0, path: "/" });
-      }
-    }
-    // Strip provider_token (large Google token) so the cookie fits and isn't truncated.
-    const stripped = { ...session, provider_token: undefined } as typeof session;
-    const chunks = createChunks(cookieKey, JSON.stringify(stripped));
-    for (const { name, value } of chunks) {
-      response.cookies.set({ name, value, ...cookieOptions });
-    }
   }
 
   return response;
