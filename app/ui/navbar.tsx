@@ -18,9 +18,11 @@ export default async function NavBar() {
         {user ? (
           <>
             <span className="text-gray-700 dark:text-gray-200">{user.email}</span>
-            <Link href="/auth/signout" className="font-semibold text-blue-600 hover:underline">
-              Sign out
-            </Link>
+            <form action="/auth/signout" method="post">
+              <button type="submit" className="font-semibold text-blue-600 hover:underline">
+                Sign out
+              </button>
+            </form>
           </>
         ) : (
           <Link href="/login" className="font-semibold text-blue-600 hover:underline">
