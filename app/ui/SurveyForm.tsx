@@ -57,11 +57,12 @@ export default function SurveyForm({ recentSurvey }: SurveyFormProps) {
       }
 
       router.push(`/dashboard/results?surveyId=${encodeURIComponent(res.data.id)}`);
+      // Don't reset submitting — let it stay true while navigating so the
+      // user sees the loading state until the results page takes over.
     } catch (err: unknown) {
       let message = "Unexpected error";
       if (err instanceof Error) message = err.message;
       setZipError("Unexpected error: " + message);
-    } finally {
       setSubmitting(false);
     }
   };
@@ -123,10 +124,16 @@ export default function SurveyForm({ recentSurvey }: SurveyFormProps) {
       {/* Submit */}
       <button
         type="submit"
-        className="w-full py-3 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 transition-colors shadow-sm disabled:opacity-60"
+        className="w-full py-3 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 transition-colors shadow-sm disabled:opacity-60 flex items-center justify-center gap-2"
         disabled={selectedHobbies.length === 0 || !zipCode.trim() || submitting}
       >
-        {submitting ? "Submitting..." : "Get my results"}
+        {submitting && (
+          <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        )}
+        {submitting ? "Generating your results..." : "Get my results"}
       </button>
     </form>
   );
