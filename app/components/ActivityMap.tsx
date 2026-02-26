@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import quokkaMapPin from '@/app/ui/resources/quokkamappin.svg';
 
 interface Activity {
   name: string;
@@ -26,7 +27,7 @@ declare global {
         addControl: (control: unknown, position?: string) => void;
         remove: () => void;
       };
-      Marker: new (options?: { color?: string }) => {
+      Marker: new (options?: Record<string, unknown>) => {
         setLngLat: (coords: [number, number]) => {
           setPopup: (popup: unknown) => {
             addTo: (map: unknown) => void;
@@ -48,6 +49,8 @@ export default function ActivityMap({ activities }: ActivityMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const map = useRef<any>(null);
+  const pinSrc =
+    typeof quokkaMapPin === 'string' ? quokkaMapPin : quokkaMapPin.src;
 
   useEffect(() => {
     if (!mapContainer.current || map.current || activities.length === 0) return;
@@ -114,8 +117,28 @@ export default function ActivityMap({ activities }: ActivityMapProps) {
               </div>
             `);
 
-          // Add marker to map using Mapbox's built-in markers
-          new window.mapboxgl.Marker({ color: '#3b82f6' })
+          // Use the branded quokka pin as a custom marker element.
+          // Inline styles are required because Mapbox marker elements are
+          // created outside React's styled-jsx scope.
+          const markerElement = document.createElement('div');
+          markerElement.style.width = '42px';
+          markerElement.style.height = '42px';
+          markerElement.style.cursor = 'pointer';
+          markerElement.style.transform = 'translateY(-6px)';
+          markerElement.style.display = 'flex';
+          markerElement.style.alignItems = 'center';
+          markerElement.style.justifyContent = 'center';
+
+          const markerImage = document.createElement('img');
+          markerImage.src = pinSrc;
+          markerImage.alt = activity.name;
+          markerImage.style.width = '100%';
+          markerImage.style.height = '100%';
+          markerImage.style.objectFit = 'contain';
+          markerImage.style.filter = 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25))';
+          markerElement.appendChild(markerImage);
+
+          new window.mapboxgl.Marker({ element: markerElement, anchor: 'bottom' })
             .setLngLat([activity.coordinates.lng, activity.coordinates.lat])
             .setPopup(popup)
             .addTo(map.current);
@@ -186,6 +209,7 @@ export default function ActivityMap({ activities }: ActivityMapProps) {
         .popup-content a:hover {
           text-decoration: underline;
         }
+
       `}</style>
     </div>
   );
