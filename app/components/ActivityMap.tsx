@@ -101,18 +101,18 @@ export default function ActivityMap({ activities }: ActivityMapProps) {
           const popup = new window.mapboxgl.Popup({ offset: 25 })
             .setHTML(`
               <div class="popup-content">
-                <h3 class="text-lg font-semibold text-blue-600">
+                <h3 class="text-lg font-semibold text-[#501F15]">
                   ${activity.link ? `<a href="${activity.link}" target="_blank" rel="noopener noreferrer">${activity.name}</a>` : activity.name}
                 </h3>
                 <p class="text-sm text-gray-600 mt-2 mb-3">${activity.description}</p>
                 <div class="flex items-center justify-between">
                   <span class="px-2 py-1 rounded text-xs font-medium ${
-                    activity.costRange === 'Free' ? 'bg-green-100 text-green-800' :
-                    activity.costRange === '$' ? 'bg-blue-100 text-blue-800' :
-                    activity.costRange === '$$' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-red-100 text-red-800'
+                    activity.costRange === 'Free' ? 'bg-[#9CDE9F]/35 text-[#2E6D34]' :
+                    activity.costRange === '$' ? 'bg-[#BB8C67]/25 text-[#876047]' :
+                    activity.costRange === '$$' ? 'bg-[#EE4D65]/20 text-[#8E2537]' :
+                    'bg-[#501F15]/20 text-[#501F15]'
                   }">${activity.costRange}</span>
-                  ${activity.link ? `<a href="${activity.link}" target="_blank" rel="noopener noreferrer" class="text-blue-500 text-sm hover:underline">Learn More →</a>` : ''}
+                  ${activity.link ? `<a href="${activity.link}" target="_blank" rel="noopener noreferrer" class="text-[#EE4D65] text-sm hover:underline">Learn More →</a>` : ''}
                 </div>
               </div>
             `);
@@ -177,7 +177,7 @@ export default function ActivityMap({ activities }: ActivityMapProps) {
         }
         
         .popup-content h3 a {
-          color: #3b82f6;
+          color: #ee4d65;
           text-decoration: none;
         }
         
@@ -200,7 +200,7 @@ export default function ActivityMap({ activities }: ActivityMapProps) {
         }
         
         .popup-content a {
-          color: #3b82f6;
+          color: #ee4d65;
           text-decoration: none;
           font-size: 13px;
           font-weight: 500;

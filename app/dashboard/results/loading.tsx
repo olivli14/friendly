@@ -22,9 +22,9 @@ export default function ResultsLoading() {
       <div className="flex flex-col items-center justify-center py-8 mb-8">
         <div className="relative w-12 h-12 mb-4">
           <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-white/10" />
-          <div className="absolute inset-0 rounded-full border-4 border-teal-500 border-t-transparent animate-spin" />
+          <div className="absolute inset-0 rounded-full border-4 border-[#EE4D65] border-t-transparent animate-spin" />
         </div>
-        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+        <p className="text-sm font-medium text-[#876047] dark:text-[#D9BCA6]">
           Generating your personalized activities...
         </p>
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">

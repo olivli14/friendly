@@ -16,16 +16,13 @@ export default async function ResultsPage({
     data: { user },
     error: userError,
   } = await supabase.auth.getUser();
-  console.log("RESULTS USER:", user?.id);
-
-
   if (userError || !user) {
     return (
       <div className="text-center mt-10">
-        <p className="text-red-500">You must be signed in to view your results.</p>
+        <p className="text-[#EE4D65]">You must be signed in to view your results.</p>
         <Link
           href="/login"
-          className="text-blue-600 hover:underline mt-2 inline-block"
+          className="text-[#501F15] dark:text-[#F9EEE6] hover:underline mt-2 inline-block"
         >
           Sign in
         </Link>
@@ -58,10 +55,10 @@ export default async function ResultsPage({
   if (surveyError || !surveys || surveys.length === 0) {
     return (
       <div className="text-center mt-10">
-        <p className="text-red-500">No survey found for this user.</p>
+        <p className="text-[#EE4D65]">No survey found for this user.</p>
         <Link
           href="/"
-          className="text-blue-600 hover:underline mt-2 inline-block"
+          className="text-[#501F15] dark:text-[#F9EEE6] hover:underline mt-2 inline-block"
         >
           Fill out a survey
         </Link>
@@ -100,10 +97,10 @@ export default async function ResultsPage({
       console.error("Failed to generate or cache activities:", err);
       return (
         <div className="text-center mt-10">
-          <p className="text-red-500">
+          <p className="text-[#EE4D65]">
             We couldn’t load your activity suggestions. Please try again or fill out a new survey.
           </p>
-          <Link href="/" className="text-blue-600 hover:underline mt-2 inline-block">
+          <Link href="/" className="text-[#501F15] dark:text-[#F9EEE6] hover:underline mt-2 inline-block">
             Back to survey
           </Link>
         </div>
@@ -116,7 +113,7 @@ export default async function ResultsPage({
       <div className="flex justify-end mb-4">
         <Link
           href="/dashboard/survey"
-          className="inline-flex items-center px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors"
+          className="inline-flex items-center px-4 py-2 rounded-lg bg-[#EE4D65] text-white text-sm font-medium hover:bg-[#D64058] transition-colors"
         >
           Fill out a new survey
         </Link>

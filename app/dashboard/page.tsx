@@ -13,10 +13,10 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-2xl mx-auto py-12 text-center">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+      <h1 className="text-3xl font-bold text-[#501F15] dark:text-[#F9EEE6] mb-2">
         Hey, {firstName}
       </h1>
-      <p className="text-gray-500 dark:text-gray-400 mb-8">
+      <p className="text-[#876047] dark:text-[#D9BCA6] mb-8">
         What would you like to do today?
       </p>
 
@@ -70,14 +70,14 @@ function DashCard({
   return (
     <Link
       href={href}
-      className="group flex flex-col items-start gap-3 p-5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-md hover:border-teal-200 dark:hover:border-teal-800 transition-all"
+      className="group flex flex-col items-start gap-3 p-5 bg-white/95 dark:bg-[#2A1711] rounded-2xl border border-[#BB8C67]/30 dark:border-[#876047]/70 shadow-sm hover:shadow-md hover:border-[#EE4D65]/40 transition-all"
     >
-      <div className="p-2 rounded-xl bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 group-hover:bg-teal-100 dark:group-hover:bg-teal-900/50 transition-colors">
+      <div className="p-2 rounded-xl bg-[#F5ECE4] dark:bg-[#3A2219] text-[#876047] dark:text-[#D9BCA6] group-hover:bg-[#EE4D65]/20 group-hover:text-[#501F15] dark:group-hover:text-[#F9EEE6] transition-colors">
         {icon}
       </div>
       <div>
-        <h2 className="font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+        <h2 className="font-semibold text-[#501F15] dark:text-[#F9EEE6]">{title}</h2>
+        <p className="text-sm text-[#876047] dark:text-[#D9BCA6]">{description}</p>
       </div>
     </Link>
   );

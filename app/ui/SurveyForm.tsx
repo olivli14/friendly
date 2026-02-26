@@ -70,18 +70,18 @@ export default function SurveyForm({ recentSurvey }: SurveyFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-lg mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-black/20 border border-gray-100 dark:border-white/10 p-8"
+      className="w-full max-w-lg mx-auto bg-white/95 dark:bg-[#2A1711] rounded-2xl shadow-xl shadow-[#BB8C67]/20 dark:shadow-black/30 border border-[#BB8C67]/30 dark:border-[#876047]/70 p-8"
     >
-      <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1 text-center">
+      <h2 className="text-xl font-bold text-[#501F15] dark:text-[#F9EEE6] mb-1 text-center">
         Tell us about yourself
       </h2>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 text-center">
+      <p className="text-sm text-[#876047] dark:text-[#D9BCA6] mb-8 text-center">
         Select your hobbies and zip code to get personalized activity suggestions.
       </p>
 
       {/* Hobbies */}
       <fieldset className="mb-8">
-        <legend className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+        <legend className="text-sm font-semibold text-[#501F15] dark:text-[#F9EEE6] mb-3">
           Your hobbies
         </legend>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -94,8 +94,8 @@ export default function SurveyForm({ recentSurvey }: SurveyFormProps) {
                 onClick={() => handleHobbyChange(hobby)}
                 className={`px-3 py-2 rounded-xl text-sm font-medium transition-all border ${
                   selected
-                    ? "bg-teal-600 text-white border-teal-600 shadow-sm"
-                    : "bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:border-teal-300 hover:text-teal-700 dark:hover:text-teal-400"
+                    ? "bg-[#EE4D65] text-white border-[#EE4D65] shadow-sm"
+                    : "bg-[#F5ECE4] dark:bg-[#3A2219] text-[#876047] dark:text-[#D9BCA6] border-[#BB8C67]/30 dark:border-[#876047]/70 hover:border-[#EE4D65] hover:text-[#501F15] dark:hover:text-[#F9EEE6]"
                 }`}
               >
                 {hobby}
@@ -107,13 +107,13 @@ export default function SurveyForm({ recentSurvey }: SurveyFormProps) {
 
       {/* Zip code */}
       <div className="mb-8">
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2" htmlFor="zipCode">
+        <label className="block text-sm font-semibold text-[#501F15] dark:text-[#F9EEE6] mb-2" htmlFor="zipCode">
           Zip code
         </label>
         <input
           id="zipCode"
           type="text"
-          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-shadow"
+          className="w-full px-4 py-2.5 rounded-xl border border-[#BB8C67]/40 dark:border-[#876047]/80 bg-[#FFF8F2] dark:bg-[#3A2219] text-[#501F15] dark:text-[#F9EEE6] focus:outline-none focus:ring-2 focus:ring-[#EE4D65] focus:border-transparent transition-shadow"
           value={zipCode}
           onChange={(e) => setZipCode(e.target.value)}
           placeholder="e.g. 95032"
@@ -124,7 +124,7 @@ export default function SurveyForm({ recentSurvey }: SurveyFormProps) {
       {/* Submit */}
       <button
         type="submit"
-        className="w-full py-3 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 transition-colors shadow-sm disabled:opacity-60 flex items-center justify-center gap-2"
+        className="w-full py-3 rounded-xl bg-[#EE4D65] text-white font-semibold hover:bg-[#D64058] transition-colors shadow-sm disabled:opacity-60 flex items-center justify-center gap-2"
         disabled={selectedHobbies.length === 0 || !zipCode.trim() || submitting}
       >
         {submitting && (

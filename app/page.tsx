@@ -17,15 +17,15 @@ export default async function HomePage() {
     return (
       <main className="min-h-screen flex items-center justify-center p-6">
         <div className="max-w-md text-center">
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl font-bold tracking-tight text-[#501F15] dark:text-[#F9EEE6] mb-3">
             Quokka Bay
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-lg text-[#876047] dark:text-[#D9BCA6] mb-8">
             Discover personalized activities, events, and spots near you based on your hobbies.
           </p>
           <Link
             href="/login"
-            className="inline-flex items-center px-6 py-3 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 transition-colors shadow-lg shadow-teal-600/20"
+            className="inline-flex items-center px-6 py-3 rounded-xl bg-[#EE4D65] text-white font-semibold hover:bg-[#D64058] transition-colors shadow-lg shadow-[#EE4D65]/20"
           >
             Get started
           </Link>
