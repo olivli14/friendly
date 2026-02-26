@@ -14,7 +14,7 @@ export default async function DashboardPage() {
   return (
     <div className="max-w-2xl mx-auto py-12 text-center">
       <h1 className="text-3xl font-bold text-[#501F15] dark:text-[#F9EEE6] mb-2">
-        Hey, {firstName}
+        Hey, {firstName}, welcome to Quokka!
       </h1>
       <p className="text-[#876047] dark:text-[#D9BCA6] mb-8">
         What would you like to do today?
