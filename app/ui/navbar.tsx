@@ -1,5 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/app/api/supabase/server";
+import quokkaLogo from "@/app/ui/resources/quokkalogo.svg";
 
 export default async function NavBar() {
   const supabase = await createClient();
@@ -13,9 +15,15 @@ export default async function NavBar() {
         {/* Brand */}
         <Link
           href="/dashboard"
-          className="text-lg font-bold tracking-tight bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent"
+          className="inline-flex items-center"
+          aria-label="Quokka"
         >
-          Quokka Bay
+          <Image
+            src={quokkaLogo}
+            alt="Quokka"
+            priority
+            className="h-10 w-auto"
+          />
         </Link>
 
         {/* Navigation links */}
