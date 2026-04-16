@@ -18,7 +18,7 @@ export default async function HomePage() {
       <main className="min-h-screen flex items-center justify-center p-6">
         <div className="max-w-md text-center">
           <h1 className="text-4xl font-bold tracking-tight text-[#501F15] dark:text-[#F9EEE6] mb-3">
-            Quokka Bay
+            Quokka
           </h1>
           <p className="text-lg text-[#876047] dark:text-[#D9BCA6] mb-8">
             Discover personalized activities, events, and spots near you based on your hobbies.

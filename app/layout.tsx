@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Quokka Bay — Discover Activities Near You",
+  title: "Quokka — Discover Activities Near You",
   description:
     "Tell us your hobbies and zip code and we'll suggest personalized activities, events, and spots near you.",
 };

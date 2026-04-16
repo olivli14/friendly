@@ -29,7 +29,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-[#501F15] dark:text-[#F9EEE6]">
-            Quokka Bay
+            Quokka
           </h1>
           <p className="text-[#876047] dark:text-[#D9BCA6] mt-2 text-sm">
             Discover activities tailored to your interests
