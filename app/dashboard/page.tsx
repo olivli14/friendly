@@ -12,7 +12,8 @@ export default async function DashboardPage() {
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] ?? "there";
 
   return (
-    <div className="max-w-3xl mx-auto py-12 text-center">
+    <div className="max-w-3xl mx-auto py-12">
+      <div className="text-center">
       <p className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.18em] bg-[#EE4D65]/10 text-[#8E2537] dark:bg-[#EE4D65]/20 dark:text-[#F7A3AF] mb-4">
         Your activity hub
       </p>
@@ -22,6 +23,7 @@ export default async function DashboardPage() {
       <p className="text-[#876047] dark:text-[#D9BCA6] mb-10 text-lg">
         What would you like to explore today?
       </p>
+      </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
         <DashCard
@@ -88,13 +90,15 @@ function DashCard({
   return (
     <Link
       href={href}
-      className="group flex flex-col items-start gap-3 p-5 bg-white/95 dark:bg-[#2A1711] rounded-2xl border border-[#BB8C67]/30 dark:border-[#876047]/70 shadow-sm hover:shadow-lg hover:border-[#EE4D65]/40 transition-all duration-200 hover:-translate-y-1"
+      className="group flex flex-col items-start gap-2.5 p-5 min-h-[148px] bg-white/95 dark:bg-[#2A1711] rounded-2xl border border-[#BB8C67]/30 dark:border-[#876047]/70 shadow-sm hover:shadow-lg hover:border-[#EE4D65]/40 transition-all duration-200 hover:-translate-y-1 text-left"
     >
-      <div className="p-2 rounded-xl bg-[#F5ECE4] dark:bg-[#3A2219] text-[#876047] dark:text-[#D9BCA6] group-hover:bg-[#EE4D65]/20 group-hover:text-[#501F15] dark:group-hover:text-[#F9EEE6] transition-colors">
-        {icon}
-      </div>
-      <div>
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-xl bg-[#F5ECE4] dark:bg-[#3A2219] text-[#876047] dark:text-[#D9BCA6] group-hover:bg-[#EE4D65]/20 group-hover:text-[#501F15] dark:group-hover:text-[#F9EEE6] transition-colors">
+          {icon}
+        </div>
         <h2 className="font-semibold text-[#501F15] dark:text-[#F9EEE6]">{title}</h2>
+      </div>
+      <div className="mt-1">
         <p className="text-sm text-[#876047] dark:text-[#D9BCA6]">{description}</p>
       </div>
     </Link>
