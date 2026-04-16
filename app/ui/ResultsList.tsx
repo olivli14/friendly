@@ -2,6 +2,7 @@
 import { useState } from "react";
 import ActivityMap from "@/app/components/ActivityMap";
 import type { Activity } from "@/app/lib/openai";
+import SuggestedCalendar from "@/app/ui/SuggestedCalendar";
 
 interface Props {
   survey: {
@@ -78,9 +79,23 @@ export default function ResultsList({ survey }: Props) {
         </span>
       </div>
 
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-[#501F15] dark:text-[#F9EEE6]">Map preview</h2>
+        <p className="text-xs text-[#876047] dark:text-[#D9BCA6]">Tap pins to view location details</p>
+      </div>
+
       {/* Map */}
-      <div className="rounded-2xl overflow-hidden shadow-lg border border-[#BB8C67]/30 dark:border-[#876047]/70 mb-8">
+      <div className="rounded-2xl overflow-hidden shadow-lg border border-[#BB8C67]/30 dark:border-[#876047]/70 mb-10">
         <ActivityMap activities={survey.activities} />
+      </div>
+
+      <SuggestedCalendar activities={survey.activities} />
+
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold text-[#501F15] dark:text-[#F9EEE6]">Your activity matches</h2>
+        <p className="text-sm text-[#876047] dark:text-[#D9BCA6] mt-1">
+          Save your favorites and use them as your weeknight or weekend plan.
+        </p>
       </div>
 
       {/* Activity cards */}
@@ -88,7 +103,8 @@ export default function ResultsList({ survey }: Props) {
         {survey.activities.map((activity, index) => (
           <div
             key={index}
-            className="bg-white/95 dark:bg-[#2A1711] rounded-2xl border border-[#BB8C67]/30 dark:border-[#876047]/70 shadow-sm hover:shadow-md transition-shadow p-5"
+            className="bg-white/95 dark:bg-[#2A1711] rounded-2xl border border-[#BB8C67]/30 dark:border-[#876047]/70 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 p-5 animate-fade-up"
+            style={{ animationDelay: `${index * 70}ms` }}
           >
             <div className="flex justify-between items-start mb-3">
               <div className="flex items-center gap-3">

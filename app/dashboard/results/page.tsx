@@ -109,13 +109,24 @@ export default async function ResultsPage({
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="flex justify-end mb-4">
+    <div className="max-w-3xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-6">
+        <div>
+          <p className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.18em] bg-[#EE4D65]/10 text-[#8E2537] dark:bg-[#EE4D65]/20 dark:text-[#F7A3AF] mb-3">
+            Your personalized plan
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight text-[#501F15] dark:text-[#F9EEE6]">
+            Recommended activities
+          </h1>
+          <p className="text-sm text-[#876047] dark:text-[#D9BCA6] mt-2">
+            Curated from your hobbies and location preferences.
+          </p>
+        </div>
         <Link
           href="/dashboard/survey"
-          className="inline-flex items-center px-4 py-2 rounded-lg bg-[#EE4D65] text-white text-sm font-medium hover:bg-[#D64058] transition-colors"
+          className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#EE4D65] text-white text-sm font-medium hover:bg-[#D64058] transition-all duration-200 shadow-md shadow-[#EE4D65]/20 hover:shadow-lg hover:-translate-y-0.5"
         >
-          Fill out a new survey
+          Start a new survey
         </Link>
       </div>
       <ResultsList

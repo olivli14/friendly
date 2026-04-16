@@ -15,7 +15,7 @@ export default async function NavBar() {
         {/* Brand */}
         <Link
           href="/dashboard"
-          className="inline-flex items-center"
+          className="inline-flex items-center gap-2"
           aria-label="Quokka"
         >
           <Image
@@ -24,12 +24,16 @@ export default async function NavBar() {
             priority
             className="h-10 w-auto"
           />
+          <span className="hidden sm:inline text-sm font-semibold text-[#501F15] dark:text-[#F9EEE6]">
+            Quokka
+          </span>
         </Link>
 
         {/* Navigation links */}
         <div className="flex items-center gap-1">
           <NavLink href="/dashboard/results">Results</NavLink>
           <NavLink href="/dashboard/favorites">Favorites</NavLink>
+          <NavLink href="/dashboard/friends">Friends</NavLink>
           <NavLink href="/dashboard/survey">New Survey</NavLink>
         </div>
 

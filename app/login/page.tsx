@@ -25,9 +25,16 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
-      <div className="w-full max-w-sm">
+    <main className="relative min-h-screen flex items-center justify-center p-6 overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-10 -left-20 h-64 w-64 rounded-full bg-[#EE4D65]/10 blur-3xl" />
+        <div className="absolute bottom-0 -right-24 h-72 w-72 rounded-full bg-[#9CDE9F]/20 blur-3xl" />
+      </div>
+      <div className="relative w-full max-w-sm">
         <div className="text-center mb-8">
+          <p className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.18em] bg-[#EE4D65]/10 text-[#8E2537] dark:bg-[#EE4D65]/20 dark:text-[#F7A3AF] mb-4">
+            Welcome back
+          </p>
           <h1 className="text-3xl font-bold tracking-tight text-[#501F15] dark:text-[#F9EEE6]">
             Quokka
           </h1>
@@ -37,15 +44,15 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-white/95 dark:bg-[#2A1711] rounded-2xl shadow-xl shadow-[#BB8C67]/20 dark:shadow-black/30 border border-[#BB8C67]/30 dark:border-[#876047]/70 p-8">
-          <h2 className="text-xl font-semibold mb-1 text-[#501F15] dark:text-[#F9EEE6]">Welcome back</h2>
+          <h2 className="text-xl font-semibold mb-1 text-[#501F15] dark:text-[#F9EEE6]">Sign in to continue</h2>
           <p className="text-sm text-[#876047] dark:text-[#D9BCA6] mb-6">
-            Sign in to save your survey results and favorites.
+            Save your plans and favorites across devices.
           </p>
 
           <button
             onClick={signInWithGoogle}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl bg-[#501F15] text-[#FFF8F2] font-medium hover:bg-[#6A2A1F] transition-colors disabled:opacity-60"
+            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl bg-[#501F15] text-[#FFF8F2] font-medium hover:bg-[#6A2A1F] transition-all duration-200 shadow-md shadow-[#501F15]/20 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-60"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -55,6 +62,9 @@ export default function LoginPage() {
             </svg>
             {loading ? "Redirecting..." : "Continue with Google"}
           </button>
+          <p className="text-xs text-[#876047] dark:text-[#D9BCA6] mt-4 text-center">
+            Optional calendar access is requested separately from your dashboard.
+          </p>
 
           {error && (
             <p className="text-red-500 text-sm mt-4 text-center">{error}</p>

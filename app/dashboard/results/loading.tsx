@@ -2,9 +2,12 @@ export default function ResultsLoading() {
   return (
     <div className="max-w-3xl mx-auto animate-pulse">
       {/* Header skeleton */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="h-8 w-40 bg-gray-200 dark:bg-white/10 rounded-lg" />
-        <div className="h-10 w-32 bg-gray-200 dark:bg-white/10 rounded-xl" />
+      <div className="mb-6">
+        <div className="h-5 w-40 bg-gray-200 dark:bg-white/10 rounded-full mb-3" />
+        <div className="flex items-center justify-between">
+          <div className="h-8 w-64 bg-gray-200 dark:bg-white/10 rounded-lg" />
+          <div className="h-10 w-36 bg-gray-200 dark:bg-white/10 rounded-xl" />
+        </div>
       </div>
 
       {/* Hobby pills skeleton */}
@@ -16,7 +19,7 @@ export default function ResultsLoading() {
       </div>
 
       {/* Map skeleton */}
-      <div className="h-64 bg-gray-200 dark:bg-white/10 rounded-2xl mb-8" />
+      <div className="h-64 bg-gray-200 dark:bg-white/10 rounded-2xl mb-10" />
 
       {/* Loading message */}
       <div className="flex flex-col items-center justify-center py-8 mb-8">
@@ -25,7 +28,7 @@ export default function ResultsLoading() {
           <div className="absolute inset-0 rounded-full border-4 border-[#EE4D65] border-t-transparent animate-spin" />
         </div>
         <p className="text-sm font-medium text-[#876047] dark:text-[#D9BCA6]">
-          Generating your personalized activities...
+          Curating your activity plan...
         </p>
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
           This may take a few seconds
